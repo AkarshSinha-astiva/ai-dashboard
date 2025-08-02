@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import "./SignUp.css";
 import Image from "../../assets/LoginImage.png";
 import { useNavigate } from "react-router-dom";
-// import Logo from "../assets/logo.png";
-import GoogleSvg from "../../assets/GoogleSvg.svg";
 import { FaEye } from "react-icons/fa6";
 import { FaEyeSlash } from "react-icons/fa6";
 import Select from "react-select";
+import CountriesData from '../../utils/countries.json'
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -21,18 +20,8 @@ const SignUp = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [countries, setCountries] = useState([]);
+  const countries = CountriesData
   // Fetch country list
-  useEffect(() => {
-    fetch("https://api.first.org/data/v1/countries?limit=300")
-      .then((res) => res.json())
-      .then((data) => {
-        const countryList = Object.values(data.data).map(
-          (item) => item.country
-        );
-        setCountries(countryList);
-      });
-  }, []);
 
   const countryOptions = useMemo(
     () =>
@@ -64,17 +53,17 @@ const SignUp = () => {
   };
 
   return (
-    <div className="login-main">
-      <div className="login-left">
+    <div className="signup-main">
+      <div className="signup-left">
         <img src={Image} alt="" />
       </div>
-      <div className="login-right">
-        <p className="login-top-p">
+      <div className="signup-right">
+        <p className="signup-top-p">
             Already have an account?{" "}
             <span onClick={() => navigate("/")}>Sign In</span>
           </p>
-        <div className="login-right-container">
-          <div className="login-center">
+        <div className="signup-right-container">
+          <div className="signup-center">
             <h2>Create your Astiva account</h2>
             <div className={`error-message ${error ? "show" : ""}`}>
               {error || " "}
@@ -180,13 +169,13 @@ const SignUp = () => {
                   }),
                 }}
               />
-              <div className="login-center-buttons">
+              <div className="signup-center-buttons">
                 <button type="submit">Create Account</button>
               </div>
             </form>
           </div>
 
-          <p className="login-bottom-p">
+          <p className="signup-bottom-p">
             By creating an account, you agree to the{" "}
             <a href="#">Terms of Service</a>. For more information about
             Astiva's privacy practices, see the{" "}

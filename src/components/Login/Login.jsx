@@ -11,7 +11,11 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    remember: false,
+  });
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -31,7 +35,7 @@ const Login = () => {
       //console.log("Login successful");
     } else {
       setError("Invalid username or password");
-      setFormData({ email: "", password: "" });
+      setFormData({ email: "", password: "", remember:false });
     }
   };
 
@@ -88,7 +92,17 @@ const Login = () => {
 
               <div className="login-center-options">
                 <div className="remember-div">
-                  <input type="checkbox" id="remember-checkbox" />
+                  <input
+                    type="checkbox"
+                    id="remember-checkbox"
+                    checked={formData.remember}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        remember: e.target.checked,
+                      }))
+                    }
+                  />
                   <label htmlFor="remember-checkbox">
                     Remember for 30 days
                   </label>

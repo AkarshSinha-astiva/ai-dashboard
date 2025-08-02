@@ -1,5 +1,5 @@
 #root {
-  background: linear-gradient(135deg, #6a3593ff, #0c1a24, #244163ff);
+  background: linear-gradient(135deg, #0d3863ff, #0c1a24, #4b0082);
   background-size: 300% 300%;
   animation: bgTransition 10s ease infinite;
 }

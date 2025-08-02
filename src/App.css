@@ -1,5 +1,16 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  background: linear-gradient(135deg, #6a3593ff, #0c1a24, #244163ff);
+  background-size: 300% 300%;
+  animation: bgTransition 10s ease infinite;
+}
+@keyframes bgTransition {
+  0% {
+    background-position: top right;
+  }
+  50% {
+    background-position: bottom left;
+  }
+  100% {
+    background-position: top right;
+  }
 }

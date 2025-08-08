@@ -215,3 +215,27 @@ form button[type="submit"] {
   cursor: pointer;
   text-decoration: underline;
 }
+
+.terms-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 1 rem gap between box and text */
+}
+
+.terms-checkbox input[type="checkbox"] {
+  width: 20px; /* bigger box */
+  height: 20px;
+  cursor: pointer;
+}
+
+.terms-checkbox label {
+  font-size: 1rem; /* bigger text */
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.field-error{
+  font-size: 1rem; /* bigger text */
+  line-height: 1.4;
+  margin-bottom:0.5rem
+}

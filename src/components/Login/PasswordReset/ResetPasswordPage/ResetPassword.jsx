@@ -57,7 +57,7 @@ const ResetPasswordPage = () => {
       );
 
       const data = await res.json();
-      console.log
+      
 
       if (res.ok) {
         setSuccess(true);

@@ -20,7 +20,7 @@
 
 .login-right {
   height: 100vh;
-
+  position: relative;
   flex-grow: 1;
   width: 60%;
 }
@@ -143,6 +143,8 @@ form button[type="submit"] {
 .forgot-pass-link {
   text-decoration: none;
   font-size: 1.3rem;
+  color: #0000ee;
+  cursor: pointer
 }
 
 .forgot-pass-link:hover {
@@ -193,10 +195,10 @@ form button[type="submit"] {
 .login-bottom-p span {
   text-decoration: none;
   font-weight: 600;
-  color: #0000EE
+  color: #0000ee;
 }
 
 .login-bottom-p span:hover {
   text-decoration: underline;
-  cursor:pointer
+  cursor: pointer;
 }

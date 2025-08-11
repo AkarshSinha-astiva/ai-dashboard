@@ -2,6 +2,9 @@ import "./App.css";
 import Login from "./components/Login/Login";
 import SignUp from "./components/SignUp/SignUp";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import VerifyEmail from "./components/VerifyEmail/Verify-Email";
+import CompanyMentions from './components/Dashboard/CompanyMentions'
+import ResetPassword from "./components/Login/PasswordReset/ResetPasswordPage/ResetPassword";
 
 export default function App() {
   return (
@@ -25,6 +28,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/dashboard" element={<CompanyMentions />} />
       </Routes>
     </Router>
   );

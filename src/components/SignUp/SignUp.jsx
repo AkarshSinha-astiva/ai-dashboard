@@ -1,82 +1,150 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useRef } from "react";
 import "./SignUp.css";
 import Image from "../../assets/LoginImage.png";
 import { useNavigate } from "react-router-dom";
-import { FaEye } from "react-icons/fa6";
-import { FaEyeSlash } from "react-icons/fa6";
-import Select from "react-select";
-import CountriesData from '../../utils/countries.json'
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { signup } from "../../api/authApis";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const firstInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     firstName: "",
     lastName: "",
-    country: "",
+    agreeToTerms: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const countries = CountriesData
-  // Fetch country list
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [apiSuccess, setApiSuccess] = useState("");
 
-  const countryOptions = useMemo(
-    () =>
-      countries.map((country) => ({
-        value: country,
-        label: country,
-      })),
-    [countries]
-  );
+  // Auto focus first field
+  React.useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
-  console.log(countries);
+  // Validation function
+  const validate = () => {
+    const newErrors = {};
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (error) setError("");
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    } else if (
+      !/[A-Z]/.test(formData.password) ||
+      !/[0-9]/.test(formData.password)
+    ) {
+      newErrors.password =
+        "Password must have at least 1 uppercase letter and 1 number";
+    }
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = "You must agree to the terms";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSignUp = (e) => {
-    e.preventDefault();
-    // Add validations and API call here
-    if (!formData.email || !formData.password || !formData.firstName) {
-      setError("Please fill all required fields");
-    } else {
-      setError("");
-      console.log("Account created:", formData);
-      navigate("/");
+  // Handle text input changes
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
+
+  // Submit handler
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setApiError("");
+    setApiSuccess("");
+
+    if (!validate()) return;
+
+    setLoading(true);
+    const payload = {
+      first_name: formData.firstName.trim(),
+      last_name: formData.lastName.trim(),
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+      agree_to_terms: formData.agreeToTerms,
+    };
+
+    try {
+      console.log(payload,'before')
+      const result = await signup(payload);
+      console.log(result, payload);
+      setApiSuccess("Account created successfully! Redirecting...");
+      setTimeout(() => navigate("/"), 1500);
+    } catch (err) {
+      setApiError(err?.message || "Signup failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  console.log(formData)
 
   return (
     <div className="signup-main">
       <div className="signup-left">
-        <img src={Image} alt="" />
+        <img src={Image} alt="Sign up illustration" />
       </div>
       <div className="signup-right">
         <p className="signup-top-p">
-            Already have an account?{" "}
-            <span onClick={() => navigate("/")}>Sign In</span>
-          </p>
+          Already have an account?{" "}
+          <span onClick={() => navigate("/")}>Sign In</span>
+        </p>
         <div className="signup-right-container">
           <div className="signup-center">
-            <h2>Create your Astiva account</h2>
-            <div className={`error-message ${error ? "show" : ""}`}>
-              {error || " "}
-            </div>
-            <form onSubmit={handleSignUp}>
+            <h2 style={{ marginBottom: "12px" }}>Create your Astiva account</h2>
+
+            {/* API messages */}
+            {apiError && <div className="error-message show">{apiError}</div>}
+            {apiSuccess && (
+              <div className="success-message show">{apiSuccess}</div>
+            )}
+
+            <form onSubmit={handleSignUp} noValidate>
+              {/* First Name */}
+              {errors.firstName && (
+                <small className="field-error">{errors.firstName}</small>
+              )}
               <input
                 type="text"
                 name="firstName"
                 placeholder="First Name"
                 value={formData.firstName}
                 onChange={handleChange}
-                required
+                ref={firstInputRef}
               />
+
+              {/* Last Name */}
+              {errors.lastName && (
+                <small className="field-error">{errors.lastName}</small>
+              )}
               <input
                 type="text"
                 name="lastName"
@@ -84,14 +152,23 @@ const SignUp = () => {
                 value={formData.lastName}
                 onChange={handleChange}
               />
+
+              {/* Email */}
+              {errors.email && (
+                <small className="field-error">{errors.email}</small>
+              )}
               <input
                 type="email"
                 name="email"
                 placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
-                required
               />
+
+              {/* Password */}
+              {errors.password && (
+                <small className="field-error">{errors.password}</small>
+              )}
               <div className="pass-input-div">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -99,7 +176,6 @@ const SignUp = () => {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
                 />
                 {showPassword ? (
                   <FaEyeSlash onClick={() => setShowPassword(false)} />
@@ -107,81 +183,32 @@ const SignUp = () => {
                   <FaEye onClick={() => setShowPassword(true)} />
                 )}
               </div>
-              <Select
-                name="country"
-                options={countryOptions}
-                value={countryOptions?.find(
-                  (option) => option.value === formData.country
-                )}
-                onChange={(selectedOption) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    country: selectedOption ? selectedOption.value : "",
-                  }))
-                }
-                placeholder="Select Country/Region"
-                isSearchable
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    width: "100%",
-                    padding: "6px",
-                    marginBottom: "16px",
-                    border: "0px",
-                    borderBottom: "1px solid black",
-                    borderRadius: "10px",
-                    boxShadow: "none",
-                    caretColor: "transparent",
-                    textAlign: "left",
-                    fontFamily: "Poppins, sans-serif",
-                    fontWeight:'500',
-                    color:'black'
-                  }),
-                  input: (base) => ({
-                    ...base,
-                    textShadow: "0 0 0 gray",
-                    caretColor: "transparent",
-                    textAlign: "left",
-                    fontFamily: "Poppins, sans-serif",
-                  }),
-                  placeholder: (base) => ({
-                    ...base,
-                    color: "#999",
-                    textAlign: "left",
-                    fontFamily: "Poppins, sans-serif",
-                  }),
-                  singleValue: (base) => ({
-                    ...base,
-                    textAlign: "left",
-                    fontFamily: "Poppins, sans-serif",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    textAlign: "left",
-                    fontFamily: "Poppins, sans-serif",
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    textAlign: "left",
-                    backgroundColor: state.isFocused ? "#f0f0f0" : "white",
-                    color: "black",
-                    fontFamily: "Poppins, sans-serif",
-                  }),
-                }}
-              />
+
+              {/* Terms checkbox */}
+              {errors.agreeToTerms && (
+                <small className="field-error">{errors.agreeToTerms}</small>
+              )}
+              <div className="terms-checkbox">
+                <input
+                  type="checkbox"
+                  name="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onChange={handleChange}
+                />
+                <label>
+                  I agree to the <a href="#">Terms of Service</a> and{" "}
+                  <a href="#">Privacy Policy</a>
+                </label>
+              </div>
+
+              {/* Submit */}
               <div className="signup-center-buttons">
-                <button type="submit">Create Account</button>
+                <button type="submit" disabled={loading}>
+                  Sign Up
+                </button>
               </div>
             </form>
           </div>
-
-          <p className="signup-bottom-p">
-            By creating an account, you agree to the{" "}
-            <a href="#">Terms of Service</a>. For more information about
-            Astiva's privacy practices, see the{" "}
-            <a href="#">Astiva Privacy Statement</a>. We'll occasionally send
-            you account-related emails.
-          </p>
         </div>
       </div>
     </div>

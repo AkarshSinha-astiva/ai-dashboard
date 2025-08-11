@@ -18,6 +18,10 @@ const ResetPasswordPage = () => {
     }
   }, [token]);
 
+  useEffect(()=>{
+    console.log('inside comp')
+  },[])
+
   const validatePassword = (pwd) => {
     // Example: Minimum 8 chars, one uppercase, one lowercase, one number
     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pwd);
@@ -52,7 +56,7 @@ const ResetPasswordPage = () => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`, // token from URL
           },
-          body: JSON.stringify(password),
+          body: JSON.stringify({ new_password: password }),
         }
       );
 
@@ -106,7 +110,7 @@ const ResetPasswordPage = () => {
               disabled={loading}
               className={`reset-button ${loading ? "disabled" : ""}`}
             >
-              {loading ? "Resetting..." : "Reset Password"}
+             Reset Password
             </button>
           </>
         )}

@@ -8,6 +8,9 @@ const VerifyEmail = () => {
   const [status, setStatus] =
     (useState < "loading") | "success" | ("error" > "loading");
   const [message, setMessage] = useState("Verifying your email...");
+  useEffect(() => {
+    console.log("Verifying your email component");
+  }, []);
 
   useEffect(() => {
     const token = searchParams.get("token");
